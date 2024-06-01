@@ -82,6 +82,7 @@ import { ref } from 'vue';
 import { authApi } from 'src/services/api';
 import { useRouter } from 'vue-router';
 import { useUserStore } from 'src/stores/UserStore';
+import { changeLanguage } from 'src/services';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -97,4 +98,10 @@ const leftDrawerOpen = ref(false);
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
+
+async function setLocale(locale: string) {
+  localStorage.setItem('locale', locale);
+  await changeLanguage(locale);
+}
+setLocale('hr-HR');
 </script>
