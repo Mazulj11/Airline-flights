@@ -61,14 +61,42 @@
       show-if-above
       bordered
     >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Menu
-        </q-item-label>
-      </q-list>
-
+          <q-banner class="text-center q-my-sm">
+                <label class="text-weight-light text-h5">{{ 'Izbornik' }}</label>
+            </q-banner>
+            <q-separator />
+            <q-list>
+                <q-item
+                    v-for="menuItem in menuItems"
+                    :key="menuItem.title"
+                    clickable
+                    v-ripple
+                    :to="menuItem.to"
+                    active-class="my-menu-link"
+                    @click="toggleLeftDrawer"
+                >
+                    <q-item-section avatar>
+                        <q-icon :name="menuItem.icon" size="md" color="primary" />
+                    </q-item-section>
+                    <q-item-section>
+                        <q-item-label>{{ menuItem.title }}</q-item-label>
+                    </q-item-section>
+                </q-item>
+            </q-list>
+            <q-item class="q-mb-md absolute-bottom">
+                <q-item-section avatar>
+                    <q-avatar rounded>
+                        <q-img
+                            :src="'https://i.pravatar.cc/300?img=' + userStore.currentUser.id"
+                            :img-style="{ border: '1px solid #000', borderRadius: '50%' }"
+                        />
+                    </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                    <q-item-label>{{ userStore.currentUser.fullName }}</q-item-label>
+                    <q-item-label caption>{{ userStore.currentUser.email }}</q-item-label>
+                </q-item-section>
+            </q-item>
     </q-drawer>
 
     <q-page-container>
@@ -78,14 +106,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 import { authApi } from 'src/services/api';
 import { useRouter } from 'vue-router';
 import { useUserStore } from 'src/stores/UserStore';
-import { changeLanguage } from 'src/services';
 
 const router = useRouter();
 const userStore = useUserStore();
+
+const menuItems: Ref<{ title: string; to: { name: string }; icon: string }[]> = ref([]);
+const setMenuItems = () => {
+  menuItems.value = [
+    { title: 'Red letenja', to: { name: 'HomePage' }, icon: 'fa-solid fa-timeline' },
+    { title: 'Rezervacije', to: { name: 'HomePage' }, icon: 'fa-regular fa-address-card' },
+    { title: 'Zračne luke', to: { name: 'HomePage' }, icon: 'fa-solid fa-plane-departure' },
+    { title: 'Zrakoplovi', to: { name: 'HomePage' }, icon: 'fa-solid fa-plane' },
+  ];
+};
+setMenuItems();
 
 const logout = async () => {
   await authApi.logout();
@@ -99,9 +137,4 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
 
-async function setLocale(locale: string) {
-  localStorage.setItem('locale', locale);
-  await changeLanguage(locale);
-}
-setLocale('hr-HR');
 </script>

@@ -2,10 +2,10 @@
   <q-dialog v-model="dialogRef" :backdrop-filter="'blur(4px) saturate(150%)'">
     <q-card style="max-width: 750px; width: 100%;">
       <q-card-section class="row items-center q-pb-md text-h6 bg-primary text-white">
-        Dodavanje leta
+        {{ label }}
       </q-card-section>
       <q-card-section class="q-pa-md scroll" style="max-height: 67vh">
-        <q-form class="q-gutter-md q-my-md">
+        <q-form class="q-gutter-md q-pa-sm">
           <label class="q-ml-md text-bold">Broj leta</label>
           <q-input
             class="q-mb-sm"
@@ -20,7 +20,7 @@
             <div class="col-6">
               <label class="q-ml-md text-bold">Vrijeme polaska</label>
               <div class="q-mb-sm">
-                <q-chip color="teal text-white">
+                <q-chip color="secondary text-white">
                   {{ dateAndTime.dateStart + ' ' + dateAndTime.timeStart }}
                 </q-chip>
               </div>
@@ -38,7 +38,7 @@
             <div class="col-6">
               <label class="q-ml-md text-bold">Vrijeme dolaska</label>
               <div class="q-mb-sm">
-                <q-chip color="teal text-white">
+                <q-chip color="secondary text-white">
                   {{ dateAndTime.dateEnd + ' ' + dateAndTime.timeEnd }}
                 </q-chip>
               </div>
@@ -71,15 +71,6 @@
             options-dense
             :rules="[required]"
           >
-            <template v-slot:append>
-              <q-btn
-                icon="add"
-                unelevated
-                color="primary"
-                @click="openAddAirportModal"
-                class="cursor-pointer"
-              />
-            </template>
             <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                     <q-item-section>
@@ -89,6 +80,15 @@
                         <q-item-label class="text-caption">{{ scope.opt.city }}</q-item-label>
                     </q-item-section>
                 </q-item>
+            </template>
+            <template #after>
+              <q-btn
+                icon="add"
+                unelevated
+                color="primary"
+                @click="openAddAirportModal"
+                class="cursor-pointer"
+              />
             </template>
           </q-select>
           <label class="q-ml-md text-bold">Aerodrom dolaska</label>
@@ -108,7 +108,7 @@
             options-dense
             :rules="[required]"
           >
-            <template v-slot:append>
+            <template #after>
               <q-btn
                 icon="add"
                 unelevated
@@ -144,7 +144,7 @@
             options-dense
             :rules="[required]"
           >
-            <template v-slot:append>
+            <template #after>
               <q-btn
                 icon="add"
                 unelevated
@@ -199,12 +199,12 @@
         <q-btn flat label="Close" color="secondary" v-close-popup />
         <q-btn
           flat
-          label="Dodaj let"
+          :label="label"
           color="primary"
           type="submit"
           :disable="isSubmitting"
           :loading="isSubmitting"
-          @click="addFlight"
+          @click="submit"
         />
       </q-card-actions>
     </q-card>
@@ -212,14 +212,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, Ref } from 'vue';
+import {
+  ref, onMounted, Ref, PropType,
+} from 'vue';
 import { useValidation } from 'src/composables';
 import {
   flightApi, aircraftApi, airportApi, AircraftResponse, AirportResponse,
+  FlightResponse,
 } from 'src/services/api';
 import { Dialog, Notify, date as qDateUtil } from 'quasar';
+import { convertCroatianDateToISO } from 'src/services/dateUtil';
 import CreateAirportModal from './CreateAirportModal.vue';
 import CreateAircraftModal from './CreateAircraftModal.vue';
+
+const props = defineProps({
+  selectedFlight: {
+    type: Object as PropType<FlightResponse | undefined>,
+    default: undefined,
+  },
+});
 
 const { required } = useValidation();
 const dialogRef = ref(false);
@@ -232,17 +243,22 @@ const dateAndTime = ref({
   timeEnd: new Date().toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' }),
 });
 
-const formState = ref({
-  flightNumber: '',
-  departureTime: new Date(),
-  arrivalTime: new Date(),
-  departureAirportId: 0,
-  arrivalAirportId: 0,
-  aircraftId: 0,
-  terminal: '',
-  gate: '',
-  status: '',
+const getInitialFormState = (flight?: FlightResponse) => ({
+  flightNumber: flight?.flightNumber ?? '',
+  departureTime: flight?.departureTime ?? new Date(),
+  arrivalTime: flight?.arrivalTime ?? new Date(),
+  departureAirportId: flight?.departureAirportId ?? 0,
+  arrivalAirportId: flight?.arrivalAirportId ?? 0,
+  aircraftId: flight?.aircraftId ?? 0,
+  terminal: flight?.terminal ?? '',
+  gate: flight?.gate ?? '',
+  status: flight?.status ?? '',
 });
+
+const formState = ref(getInitialFormState());
+const label: Ref<string> = ref(
+  props.selectedFlight?.flightNumber ? 'Uredi let' : 'Dodaj let',
+);
 
 const airports: Ref<AirportResponse[]> = ref([]);
 const aircrafts: Ref<AircraftResponse[]> = ref([]);
@@ -259,27 +275,36 @@ async function fetchData() {
   }
 }
 
-async function addFlight() {
+async function submit() {
   isSubmitting.value = true;
 
-  const formatedStartDate = qDateUtil.formatDate(dateAndTime.value.dateStart, 'YYYY-MM-DD');
-  const formatedEndDate = qDateUtil.formatDate(dateAndTime.value.dateEnd, 'YYYY-MM-DD');
+  const formattedStartDate = convertCroatianDateToISO(dateAndTime.value.dateStart);
+  const formattedEndDate = convertCroatianDateToISO(dateAndTime.value.dateEnd);
 
-  formState.value.departureTime = new Date(qDateUtil.addToDate(formatedStartDate, {
+  formState.value.departureTime = new Date(qDateUtil.addToDate(formattedStartDate, {
     hours: +(dateAndTime.value.timeStart.split(':')[0]),
     minutes: +(dateAndTime.value.timeStart.split(':')[1]),
   }));
-  formState.value.arrivalTime = new Date(qDateUtil.addToDate(formatedEndDate, {
+  formState.value.arrivalTime = new Date(qDateUtil.addToDate(formattedEndDate, {
     hours: +(dateAndTime.value.timeEnd.split(':')[0]),
     minutes: +(dateAndTime.value.timeEnd.split(':')[1]),
   }));
 
   try {
-    await flightApi.createFlight(formState.value);
-    Notify.create({
-      message: 'Let je uspešno dodat',
-      color: 'positive',
-    });
+    const flightId = props.selectedFlight?.id;
+    if (flightId) {
+      await flightApi.updateFlight(flightId, formState.value);
+      Notify.create({
+        message: 'Let je uspješno ažuriran',
+        color: 'info',
+      });
+    } else {
+      await flightApi.createFlight(formState.value);
+      Notify.create({
+        message: 'Let je uspešno dodat',
+        color: 'positive',
+      });
+    }
     dialogRef.value = false;
   } catch (error) {
     Notify.create({
@@ -310,4 +335,23 @@ function openAddAircraftModal() {
     fetchData();
   });
 }
+
+const init = () => {
+  if (props.selectedFlight) {
+    formState.value = getInitialFormState(props.selectedFlight);
+    dateAndTime.value.dateStart = new Date(props.selectedFlight.departureTime).toLocaleDateString('hr-HR', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    });
+    dateAndTime.value.timeStart = new Date(props.selectedFlight.departureTime).toLocaleTimeString('hr-HR', {
+      hour: '2-digit', minute: '2-digit',
+    });
+    dateAndTime.value.dateEnd = new Date(props.selectedFlight.arrivalTime).toLocaleDateString('hr-HR', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    });
+    dateAndTime.value.timeEnd = new Date(props.selectedFlight.arrivalTime).toLocaleTimeString('hr-HR', {
+      hour: '2-digit', minute: '2-digit',
+    });
+  }
+};
+init();
 </script>

@@ -6,8 +6,8 @@
         </q-card-section>
 
         <q-card-section class="q-pa-md scroll" style="max-height: 67vh">
-          <q-form class="q-gutter-md">
-            <label class="q-ml-md">Naziv</label>
+          <q-form class="q-gutter-md q-pa-sm q-my-sm">
+            <label class="q-ml-md text-bold">Naziv</label>
             <q-input
               class="q-mb-sm"
               standout
@@ -16,7 +16,7 @@
               v-model="formState.name"
               type="text"
               :rules="[required]" />
-            <label class="q-ml-md">Grad</label>
+            <label class="q-ml-md text-bold">Grad</label>
             <q-input
               class="q-mb-sm"
               dense
@@ -25,7 +25,7 @@
               v-model="formState.city"
               type="text"
               :rules="[required]" />
-            <label class="q-ml-md">Država</label>
+            <label class="q-ml-md text-bold">Država</label>
             <q-input
               class="q-mb-sm"
               dense
@@ -34,7 +34,7 @@
               v-model="formState.country"
               type="text"
               :rules="[required]" />
-            <label class="q-ml-md">Broj terminala</label>
+            <label class="q-ml-md text-bold">Broj terminala</label>
             <q-input
               class="q-mb-sm"
               dense
@@ -43,7 +43,7 @@
               v-model="formState.terminalCount"
               type="number"
               :rules="[required]" />
-            <label class="q-ml-md">Broj pista</label>
+            <label class="q-ml-md text-bold">Broj pista</label>
             <q-input
               class="q-mb-sm"
               dense
@@ -52,7 +52,7 @@
               v-model="formState.runwayCount"
               type="number"
               :rules="[required]" />
-            <label class="q-ml-md">Kapacitet</label>
+            <label class="q-ml-md text-bold">Kapacitet</label>
             <q-input
               class="q-mb-sm"
               dense

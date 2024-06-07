@@ -6,8 +6,8 @@
         </q-card-section>
 
         <q-card-section class="q-pa-md scroll" style="max-height: 67vh">
-          <q-form class="q-gutter-md">
-            <label class="q-ml-md">Model</label>
+          <q-form class="q-gutter-md q-pa-sm q-my-sm">
+            <label class="q-ml-md text-bold">Model</label>
             <q-input
               class="q-mb-sm"
               standout
@@ -16,7 +16,7 @@
               v-model="formState.model"
               type="text"
               :rules="[required]" />
-            <label class="q-ml-md">Kapacitet</label>
+            <label class="q-ml-md text-bold">Kapacitet</label>
             <q-input
               class="q-mb-sm"
               dense
@@ -25,7 +25,7 @@
               v-model="formState.capacity"
               type="number"
               :rules="[required]" />
-            <label class="q-ml-md">Registracijski broj</label>
+            <label class="q-ml-md text-bold">Registracijski broj</label>
             <q-input
               class="q-mb-sm"
               dense
@@ -34,14 +34,14 @@
               v-model="formState.registrationNumber"
               type="text"
               :rules="[required]" />
-            <label class="q-ml-md">Godina proizvodnje</label>
+            <label class="q-ml-md text-bold">Godina proizvodnje</label>
             <q-select
               class="q-mb-sm"
               dense
               standout
               clearable
               v-model="formState.yearOfProduction"
-              :options="Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i)"
+              :options="Array.from({ length: 75 }, (_, i) => new Date().getFullYear() - i)"
               options-dense
               :rules="[required]"
             />
