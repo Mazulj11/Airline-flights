@@ -1,17 +1,19 @@
-FROM node:lts-alpine
+FROM node:latest
 
-RUN npm install -g http-server
+RUN npm install -g @quasar/cli
 
 WORKDIR /app
 
 COPY package*.json ./
 
-COPY . ./
-
 RUN npm install
+
+COPY . .
 
 RUN npm run build
 
-EXPOSE 8080
+EXPOSE 9000
 
-CMD [ "http-server", "dist" ]
+WORKDIR /app/dist/pwa
+
+CMD ["quasar", "dev", "--history"]
