@@ -2,7 +2,8 @@
   <q-page padding>
     <div class="row justify-between items-center q-mb-md">
       <div class="text-h4 q-pl-xl">
-        <div class="q-pa-sm bg-white" style="border-radius: 5px;">
+        <div class="q-pa-sm bg-white"
+        style="border-radius: 5px; box-shadow: 5px 5px 20px 0px rgba(0,0,0,0.5)">
           {{ "Red letenja" }}
         </div>
       </div>
@@ -18,6 +19,7 @@
         :rows="rows"
         :columns="columns"
         :pagination="pagination"
+        elevated
         row-key="id"
       >
         <template v-slot:header="props">

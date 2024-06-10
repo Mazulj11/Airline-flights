@@ -119,8 +119,8 @@ const setMenuItems = () => {
   menuItems.value = [
     { title: 'Red letenja', to: { name: 'HomePage' }, icon: 'fa-solid fa-timeline' },
     { title: 'Rezervacije', to: { name: 'HomePage' }, icon: 'fa-regular fa-address-card' },
-    { title: 'Zračne luke', to: { name: 'HomePage' }, icon: 'fa-solid fa-plane-departure' },
-    { title: 'Zrakoplovi', to: { name: 'HomePage' }, icon: 'fa-solid fa-plane' },
+    { title: 'Zračne luke', to: { name: 'AirportsPage' }, icon: 'fa-solid fa-plane-departure' },
+    { title: 'Zrakoplovi', to: { name: 'AircraftsPage' }, icon: 'fa-solid fa-plane' },
   ];
 };
 setMenuItems();

@@ -5,7 +5,7 @@
   >
     <div class="column q-pa-lg">
       <div class="row">
-        <q-card roundeq class="shadow-24" style="width:350px; height:430px;">
+        <q-card roundeq class="shadow-24" style="width:350px; height:465px;">
           <q-card-section class="bg-light-blue-7">
             <h4 class="text-h5 text-white q-my-md">Prijava</h4>
             <div class="absolute-bottom-right q-pr-md" style="transform: translateY(50%);">
@@ -16,18 +16,20 @@
             <q-form class="q-px-sm q-pt-xl">
               <q-input
               rounded
-              clearable
-              v-model="formStateLogin.username" type="text" label="Korisničko ime">
+              v-model="formStateLogin.username"
+              type="text"
+              label="Email"
+              :rules="[required, email]">
                 <template v-slot:prepend>
-                  <q-icon name="person" />
+                  <q-icon name="email" />
                 </template>
               </q-input>
               <q-input
                 rounded
-                clearable
                 v-model="formStateLogin.password"
                 type="password"
-                label="Password">
+                label="Password"
+                :rules="[required, password]">
                 <template v-slot:prepend>
                   <q-icon name="lock" />
                 </template>
@@ -43,7 +45,8 @@
               label="Prijavi se"
               :disable="formStateLogin.username === ''
                 || formStateLogin.password === '' || isSubmitting"
-              @click = "submitForm"/>
+              @click = "submitForm"
+              />
           </q-card-actions>
           <q-card-section>
             <div class="text-center">
@@ -67,9 +70,11 @@ import { useRouter } from 'vue-router';
 import { Notify } from 'quasar';
 import { authApi, UserResponse } from 'src/services/api';
 import { useUserStore } from 'src/stores/UserStore';
+import { useValidation } from 'src/composables';
 
 const router = useRouter();
 const userStore = useUserStore();
+const { required, email, password } = useValidation();
 
 const isSubmitting: Ref<boolean> = ref(false);
 
