@@ -321,7 +321,7 @@ async function handleWebSocketMessage(event: MessageEvent) {
 
 async function connectWebSocket() {
   try {
-    socket = new WebSocket('ws://localhost:8000/ws/flights');
+    socket = new WebSocket('ws://129.152.19.190:8000/ws/flights');
     socket.onmessage = handleWebSocketMessage;
     await new Promise((resolve) => {
       socket.onopen = () => {

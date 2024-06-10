@@ -16,7 +16,7 @@ const post = async (context: Context): Promise<Response | void> => {
 };
 
 const apiConfig = new Configuration({
-  basePath: 'http://localhost:8000',
+  basePath: 'http://129.152.19.190:8000',
   credentials: 'include',
   middleware: [{ post }],
 });
